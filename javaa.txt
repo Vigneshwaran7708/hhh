@@ -1,0 +1,167 @@
+package register;
+
+public class Member {
+
+private String email,password;
+	
+	
+	public Member() {
+		super();
+	}
+
+	public Member(String email, String password) {
+		super();
+		
+		this.email = email;
+		this.password = password;
+		
+	}
+
+	
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	
+	
+}
+		}
+
+
+Register.....
+
+
+
+
+package register;
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class 
+ */
+@WebServlet("/login")
+public class Register extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public Register() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		
+		String email=request.getParameter("email");
+		String password=request.getParameter("password");
+		
+		  
+		Member login=new Member(email,password);
+		
+		
+		RegisterDao rdao=new RegisterDao();
+		String result=rdao.insert(login);
+		response.getWriter().print(result);
+		
+
+}}
+
+
+
+
+
+RegisterDao{
+
+
+package register;
+
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class RegisterDao {
+	
+	private String dbUrl = "jdbc:mysql://localhost:3306/userdb";
+	private String dbUname = "root";
+	private String dbPassword = "test1234";
+	private String dbDriver = "com.mysql.jdbc.Driver";
+	
+	
+	public void loadDriver(String dbDriver)
+	{
+		try {
+			Class.forName(dbDriver);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public Connection getConnection()
+	{
+		Connection con = null;
+		try {
+			con = DriverManager.getConnection(dbUrl, dbUname, dbPassword);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return con;
+	}
+	
+	
+	public String insert(Member login)
+	{
+		loadDriver(dbDriver);
+		Connection con = getConnection();
+		String result = "Data entered successfully";
+		String sql = "insert into login values(?,?)";
+		
+		PreparedStatement ps;
+		try {
+		ps = con.prepareStatement(sql);
+		ps.setString(1, login.getEmail());
+		ps.setString(2, login.getPassword());
+
+		ps.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			result = "Data not entered";
+		}
+		return result;
+	}
+
+}
